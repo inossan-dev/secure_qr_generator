@@ -48,9 +48,8 @@ void main() {
       final invalidData = QRData(
           payload: List.generate(10000, (i) => i).fold<Map<String, dynamic>>(
               {},
-                  (map, i) => map..[i.toString()] = 'very_long_value_that_will_cause_error'
-          )
-      );
+              (map, i) => map
+                ..[i.toString()] = 'very_long_value_that_will_cause_error'));
 
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
@@ -174,11 +173,9 @@ void main() {
         home: Scaffold(
           body: AutoRegeneratingQRView(
             data: QRData(
-                payload: List.generate(10000, (i) => i).fold<Map<String, dynamic>>(
-                    {},
-                        (map, i) => map..[i.toString()] = 'very_long_value'
-                )
-            ),
+                payload: List.generate(10000, (i) => i)
+                    .fold<Map<String, dynamic>>({},
+                        (map, i) => map..[i.toString()] = 'very_long_value')),
             generator: generator,
             onError: (error) => capturedError = error,
             builder: (qrData) => const Text('QR Content'),

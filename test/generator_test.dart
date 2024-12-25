@@ -126,7 +126,8 @@ void main() {
 
       final resultEncrypted = await encryptedGenerator.generateQR(testData);
 
-      expect(resultUnencrypted.contentSize, lessThan(resultEncrypted.contentSize));
+      expect(
+          resultUnencrypted.contentSize, lessThan(resultEncrypted.contentSize));
     });
   });
 
@@ -141,9 +142,9 @@ void main() {
       );
 
       expect(
-            () => generator.generateQR(largeData),
+        () => generator.generateQR(largeData),
         throwsA(isA<GenerationError>().having(
-              (e) => e.type,
+          (e) => e.type,
           'error type',
           GenerationErrorType.payloadTooLarge,
         )),
@@ -152,7 +153,7 @@ void main() {
 
     test('should throw on invalid configuration combinations', () {
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           enableEncryption: true,
           enableSignature: true,
         ),
@@ -160,7 +161,7 @@ void main() {
       );
 
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           secretKey: 'short',
           enableEncryption: true,
         ),
@@ -168,7 +169,7 @@ void main() {
       );
 
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           validityDuration: const Duration(seconds: 0),
         ),
         throwsArgumentError,
@@ -199,7 +200,7 @@ void main() {
 
     test('should throw on weak production configuration', () {
       expect(
-            () => GeneratorConfig.production(
+        () => GeneratorConfig.production(
           secretKey: 'too_short',
         ),
         throwsArgumentError,

@@ -23,8 +23,8 @@ class SecureQRGenerator {
   /// Creates a new generator with the specified configuration
   SecureQRGenerator(this.config)
       : _encrypter = config.enableEncryption && config.secretKey != null
-      ? Encrypter(AES(Key.fromUtf8(config.secretKey!.padRight(32))))
-      : null,
+            ? Encrypter(AES(Key.fromUtf8(config.secretKey!.padRight(32))))
+            : null,
         _uuid = const Uuid();
 
   /// Generates a secure QR code from the provided data
@@ -51,7 +51,8 @@ class SecureQRGenerator {
       final jsonPayload = jsonEncode(fullPayload);
 
       // Size verification (estimate of final QR size)
-      if (jsonPayload.length > 2000) { // Arbitrary limit for this example
+      if (jsonPayload.length > 2000) {
+        // Arbitrary limit for this example
         throw GenerationError(
           type: GenerationErrorType.payloadTooLarge,
           message: 'Payload too large',

@@ -32,7 +32,6 @@ class QRDisplayScreen extends StatefulWidget {
 }
 
 class _QRDisplayScreenState extends State<QRDisplayScreen> {
-
   late TextEditingController phoneController;
   late TextEditingController secretKeyController;
   bool enableEncryption = true;
@@ -60,7 +59,8 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
   @override
   void initState() {
     phoneController = TextEditingController(text: phoneNumber);
-    secretKeyController = TextEditingController(text: '2024#@#qrcod#orange@##perform#==');
+    secretKeyController =
+        TextEditingController(text: '2024#@#qrcod#orange@##perform#==');
     // Initialisation des configs
     secureConfig = GeneratorConfig(
       secretKey: secretKeyController.text,
@@ -83,7 +83,8 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
           children: [
             TextField(
               controller: secretKeyController,
-              decoration: const InputDecoration(labelText: 'Clé secrète AES-256 (optionnel)'),
+              decoration: const InputDecoration(
+                  labelText: 'Clé secrète AES-256 (optionnel)'),
               onChanged: (_) => updateGenerator(),
             ),
             SwitchListTile(
@@ -121,7 +122,8 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
               },
             ),
             TextField(
-              decoration: const InputDecoration(labelText: 'Numéro de téléphone'),
+              decoration:
+                  const InputDecoration(labelText: 'Numéro de téléphone'),
               controller: phoneController,
               onChanged: (value) {
                 setState(() {
@@ -148,7 +150,8 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
                       color: Colors.deepOrangeAccent,
                     ),
                   ),
-                  onRegenerate: (result) => log('Nouveau QR code généré: ${result.toMap()}'),
+                  onRegenerate: (result) =>
+                      log('Nouveau QR code généré: ${result.toMap()}'),
                   onError: (error) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Erreur: $error')),
@@ -169,4 +172,3 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
     super.dispose();
   }
 }
-

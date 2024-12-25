@@ -31,15 +31,19 @@ void main() {
         tags: ['test', 'demo'],
       );
 
-      expect(minimalData.toMap(), equals({
-        'payload': {'test': 'value'},
-      }));
+      expect(
+          minimalData.toMap(),
+          equals({
+            'payload': {'test': 'value'},
+          }));
 
-      expect(fullData.toMap(), equals({
-        'payload': {'test': 'value'},
-        'metadata': {'version': '1.0'},
-        'tags': ['test', 'demo'],
-      }));
+      expect(
+          fullData.toMap(),
+          equals({
+            'payload': {'test': 'value'},
+            'metadata': {'version': '1.0'},
+            'tags': ['test', 'demo'],
+          }));
     });
 
     test('toMap should handle empty tags list', () {
@@ -48,9 +52,11 @@ void main() {
         tags: [],
       );
 
-      expect(data.toMap(), equals({
-        'payload': {'test': 'value'},
-      }));
+      expect(
+          data.toMap(),
+          equals({
+            'payload': {'test': 'value'},
+          }));
     });
   });
 }

@@ -39,7 +39,7 @@ void main() {
     test('should validate encryption configuration', () {
       // Clé trop courte avec chiffrement activé
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           secretKey: 'short',
           enableEncryption: true,
         ),
@@ -48,7 +48,7 @@ void main() {
 
       // Chiffrement activé sans clé
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           enableEncryption: true,
         ),
         throwsArgumentError,
@@ -56,7 +56,7 @@ void main() {
 
       // Configuration valide
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           secretKey: 'this_is_a_long_enough_secret_key_123456',
           enableEncryption: true,
         ),
@@ -67,7 +67,7 @@ void main() {
     test('should validate signature configuration', () {
       // Signature activée sans clé
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           enableSignature: true,
         ),
         throwsArgumentError,
@@ -75,7 +75,7 @@ void main() {
 
       // Configuration valide
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           secretKey: 'valid_secret_key',
           enableSignature: true,
         ),
@@ -86,7 +86,7 @@ void main() {
     test('should validate validity duration', () {
       // Durée nulle
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           validityDuration: const Duration(seconds: 0),
         ),
         throwsArgumentError,
@@ -94,7 +94,7 @@ void main() {
 
       // Durée négative
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           validityDuration: const Duration(seconds: -1),
         ),
         throwsArgumentError,
@@ -102,7 +102,7 @@ void main() {
 
       // Durée valide
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           validityDuration: const Duration(minutes: 1),
         ),
         returnsNormally,
@@ -112,14 +112,14 @@ void main() {
     test('should validate data version', () {
       // Version invalide
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           dataVersion: 0,
         ),
         throwsArgumentError,
       );
 
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           dataVersion: -1,
         ),
         throwsArgumentError,
@@ -127,7 +127,7 @@ void main() {
 
       // Version valide
       expect(
-            () => GeneratorConfig(
+        () => GeneratorConfig(
           dataVersion: 1,
         ),
         returnsNormally,
@@ -137,7 +137,7 @@ void main() {
     test('should validate production config', () {
       // Clé trop courte
       expect(
-            () => GeneratorConfig.production(
+        () => GeneratorConfig.production(
           secretKey: 'short',
         ),
         throwsArgumentError,

@@ -45,7 +45,8 @@ class AutoRegeneratingQRView extends StatefulWidget {
     this.builder,
     this.style = const QrStyle(
       eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
-      dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.circle),
+      dataModuleStyle:
+          QrDataModuleStyle(dataModuleShape: QrDataModuleShape.circle),
     ),
     this.size = 200,
   });
@@ -111,7 +112,9 @@ class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
     // Calculate regeneration interval
     final interval = widget.regenerationInterval ??
         Duration(
-          milliseconds: (widget.generator.config.validityDuration.inMilliseconds * 0.8).round(),
+          milliseconds:
+              (widget.generator.config.validityDuration.inMilliseconds * 0.8)
+                  .round(),
         );
 
     _regenerationTimer = Timer.periodic(interval, (_) => _regenerateQR());
@@ -163,20 +166,23 @@ class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
       return const SizedBox.shrink();
     }
 
-    return widget.builder?.call(_currentResult!.qrContent) ?? QrImageView(
-      data: _currentResult!.qrContent,
-      size: widget.size,
-      eyeStyle: widget.style.eyeStyle ?? const QrEyeStyle(
-        eyeShape: QrEyeShape.square,
-        color: Colors.black,
-      ),
-      dataModuleStyle: widget.style.dataModuleStyle ?? const QrDataModuleStyle(
-        dataModuleShape: QrDataModuleShape.square,
-        color: Colors.black,
-      ),
-      embeddedImage: widget.style.embeddedImage,
-      embeddedImageStyle: widget.style.embeddedImageStyle,
-    );
+    return widget.builder?.call(_currentResult!.qrContent) ??
+        QrImageView(
+          data: _currentResult!.qrContent,
+          size: widget.size,
+          eyeStyle: widget.style.eyeStyle ??
+              const QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Colors.black,
+              ),
+          dataModuleStyle: widget.style.dataModuleStyle ??
+              const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Colors.black,
+              ),
+          embeddedImage: widget.style.embeddedImage,
+          embeddedImageStyle: widget.style.embeddedImageStyle,
+        );
   }
 }
 

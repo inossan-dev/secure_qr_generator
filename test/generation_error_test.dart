@@ -32,7 +32,8 @@ void main() {
         message: 'Test error',
       );
 
-      expect(error.toString(), equals('GenerationError(GenerationErrorType.signature): Test error'));
+      expect(error.toString(),
+          equals('GenerationError(GenerationErrorType.signature): Test error'));
     });
 
     test('should cover all error types', () {

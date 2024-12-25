@@ -17,7 +17,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  secure_qr_generator: ^1.0.4
+  secure_qr_generator: ^1.0.6
 ```
 
 Then run:
