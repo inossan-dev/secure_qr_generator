@@ -1,133 +1,196 @@
-# secure_qr_generator
+# Secure QR Generator
 
-🔒 A robust Flutter library for generating and managing secure QR codes with automatic regeneration, incorporating encryption, digital signatures, and temporal validation.
-
-
-## Prerequisites
-
-Before getting started, make sure you have:
-- Flutter SDK version 3.0.0 or higher
-- Dart SDK version 3.0.0 or higher
-- A basic understanding of:
-    - Asynchronous programming in Dart
-    - Cryptography concepts (for advanced usage)
-    - Flutter widget system
-
+A Flutter package for generating secure, auto-regenerating QR codes with encryption, digital signatures, and automatic expiration management.
 
 ## Features
 
-- ⏱️ **QR Code Auto-regeneration :** Automatic and configurable code updates for enhanced security
-- 🎨 **Customizable Flutter Widget :** Native and flexible integration into your Flutter interfaces
-- 🔄 **Temporal Code Validation :** Automatic management of code validity duration
-- 🔐 **AES Data Encryption (optional) :** Protection of sensitive information with robust encryption (optional)
-- ✍️ **Digital Signature for Data Integrity (optional) :** Guarantee of data integrity and authenticity (optional)
-
+- 🔒 **Secure by Design**: Support for AES encryption and HMAC-SHA256 signatures
+- ⏱️ **Auto-Expiration**: Built-in validity duration management
+- 🔄 **Auto-Regeneration**: Automatic QR code refresh before expiration
+- 📱 **Flutter Integration**: Ready-to-use Flutter widget
+- 🎨 **Customizable Styling**: Full control over QR code appearance
+- ⚡ **Performance Optimized**: Efficient regeneration with minimal overhead
 
 ## Installation
 
-Add the dependency to your pubspec.yaml file:
+Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  secure_qr_flutter: ^1.0.0
+  secure_qr_generator: ^1.0.4
 ```
+
 Then run:
 
 ```bash
 flutter pub get
 ```
 
+## Quick Start
 
-## Usage Guide
-
-### Basic Configuration
-
-The configuration defines the security parameters for your QR codes. Here's a complete example with explanations:
+### Basic Usage
 
 ```dart
-final config = SecureQRConfig(
-  // Duration for which the QR code remains valid after generation
+import 'package:secure_qr_generator/secure_qr_generator.dart';
+
+// Create a configuration
+final config = GeneratorConfig.production(
+  secretKey: 'your-32-character-secret-key-here!!!',
   validityDuration: Duration(minutes: 5),
 );
-```
 
-### Simple QR Code Generation
-
-Here's how to generate a secure QR code with structured data:
-
-```dart
-// Create the generator with our configuration
+// Initialize the generator
 final generator = SecureQRGenerator(config);
 
-// Generate the secure payload
-final qrData = generator.generateQRPayload({
-  'userId': '12345',      // Unique identifier
-  'access': 'full',       // Access level
-  'timestamp': DateTime.now().toIso8601String(), // Timestamp
-});
+// Create QR data
+final data = QRData(
+  payload: {'userId': '123', 'access': 'granted'},
+  metadata: {'purpose': 'access_control'},
+  tags: ['entrance', 'visitor'],
+);
+
+// Generate a QR code
+final result = await generator.generateQR(data);
 ```
 
-### Using the Auto-regenerating Widget
-
-The auto-regenerating widget enables automatic QR code updates for enhanced security:
+### Using the Auto-Regenerating Widget
 
 ```dart
-AutoRegeneratingQRWidget(
-  // Data to encode in the QR code
-  data: {'userId': '12345'},
-
-  // Our configured generator
+AutoRegeneratingQRView(
+  data: data,
   generator: generator,
-
-  // Code regeneration interval
-  regenerationInterval: Duration(minutes: 4),
-
-  // Appearance customization
-  builder: (qrData) => QrImageView(
-    data: qrData,
-    size: 200,
+  size: 200,
+  style: QrStyle(
+    eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
+    dataModuleStyle: QrDataModuleStyle(
+      dataModuleShape: QrDataModuleShape.circle,
+    ),
   ),
-
-  // Callback called on each regeneration
-  onRegenerate: (newData) {
-    print('QR Code successfully regenerated');
+  onRegenerate: (result) {
+    print('New QR generated: ${result.id}');
+  },
+  onError: (error) {
+    print('Error: $error');
   },
 )
 ```
 
-### QR Code Validation
+## Configuration Options
+
+### Development Configuration
 
 ```dart
-final result = generator.validateQRPayload(scannedData);
-if (result.isValid) {
-  print('Valid data : ${result.data}');
-} else if (result.isExpired) {
-  print('QR code expired');
-} else {
-  print('Error : ${result.error}');
-}
+final devConfig = GeneratorConfig.development();
 ```
 
-## Advanced Configuration
-
-### Maximum Security Mode
+### Production Configuration
 
 ```dart
-final secureConfig = SecureQRConfig(
-  // Create a secure configuration
-  secretKey: "votre_clé_secrète_32_caractères",
-
-  // Duration for which the QR code remains valid after generation
+final prodConfig = GeneratorConfig.production(
+  secretKey: 'your-secure-production-key-here!!!!!!',
   validityDuration: Duration(minutes: 5),
-
-  // Enable AES encryption to protect sensitive data
-  enableEncryption: true,
-
-  // Enable digital signature to ensure authenticity
-  enableSignature: true,
 );
 ```
 
-## Licence
+### Custom Configuration
 
-MIT License - see the LICENSE file for more details.
+```dart
+final customConfig = GeneratorConfig(
+  secretKey: 'your-secret-key',
+  validityDuration: Duration(minutes: 10),
+  enableEncryption: true,
+  enableSignature: true,
+  dataVersion: 1,
+  idPrefix: 'CUSTOM_',
+);
+```
+
+## Advanced Features
+
+### Custom QR Code Styling
+
+```dart
+QrStyle(
+  eyeStyle: QrEyeStyle(
+    eyeShape: QrEyeShape.square,
+    color: Colors.blue,
+  ),
+  dataModuleStyle: QrDataModuleStyle(
+    dataModuleShape: QrDataModuleShape.circle,
+    color: Colors.black,
+  ),
+  embeddedImage: AssetImage('assets/logo.png'),
+  embeddedImageStyle: QrEmbeddedImageStyle(
+    size: Size(40, 40),
+  ),
+)
+```
+
+### Custom Regeneration Interval
+
+```dart
+AutoRegeneratingQRView(
+  data: data,
+  generator: generator,
+  regenerationInterval: Duration(minutes: 2),
+  // ... other parameters
+)
+```
+
+### Custom QR Code Builder
+
+```dart
+AutoRegeneratingQRView(
+  data: data,
+  generator: generator,
+  builder: (qrData) => Container(
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.blue),
+    ),
+    child: QrImageView(
+      data: qrData,
+      size: 200,
+    ),
+  ),
+)
+```
+
+## Error Handling
+
+The package includes comprehensive error handling:
+
+```dart
+try {
+  final result = await generator.generateQR(data);
+  // Use the result
+} on GenerationError catch (e) {
+  switch (e.type) {
+    case GenerationErrorType.configuration:
+      print('Configuration error: ${e.message}');
+      break;
+    case GenerationErrorType.encryption:
+      print('Encryption error: ${e.message}');
+      break;
+    case GenerationErrorType.payloadTooLarge:
+      print('Payload too large: ${e.message}');
+      break;
+    // Handle other error types...
+  }
+}
+```
+
+## Security Considerations
+
+- Keep your `secretKey` secure and never commit it to version control
+- Use different keys for development and production environments
+- Consider the QR code size limits when adding data
+- Choose an appropriate validity duration for your use case
+- Regularly rotate encryption keys in production
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
