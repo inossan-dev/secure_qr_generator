@@ -166,8 +166,14 @@ class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
     return widget.builder?.call(_currentResult!.qrContent) ?? QrImageView(
       data: _currentResult!.qrContent,
       size: widget.size,
-      eyeStyle: widget.style.eyeStyle ?? const QrEyeStyle(),
-      dataModuleStyle: widget.style.dataModuleStyle ?? const QrDataModuleStyle(),
+      eyeStyle: widget.style.eyeStyle ?? const QrEyeStyle(
+        eyeShape: QrEyeShape.square,
+        color: Colors.black,
+      ),
+      dataModuleStyle: widget.style.dataModuleStyle ?? const QrDataModuleStyle(
+        dataModuleShape: QrDataModuleShape.square,
+        color: Colors.black,
+      ),
       embeddedImage: widget.style.embeddedImage,
       embeddedImageStyle: widget.style.embeddedImageStyle,
     );
