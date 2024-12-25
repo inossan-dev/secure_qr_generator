@@ -1,11 +1,16 @@
+## 1.0.3
+
+* fix bug: QrImageView
+
+
 ## 1.0.2
 
-* Implementation for basic usage
+* add units tests
 
 
 ## 1.0.1
 
-* Enrichment of comments in classes
+* allow to add custom qrcode
 
 
 ## 1.0.0

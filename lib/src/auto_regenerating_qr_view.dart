@@ -43,7 +43,10 @@ class AutoRegeneratingQRView extends StatefulWidget {
     this.onRegenerate,
     this.onError,
     this.builder,
-    this.style = const QrStyle(),
+    this.style = const QrStyle(
+      eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
+      dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.circle),
+    ),
     this.size = 200,
   });
 
