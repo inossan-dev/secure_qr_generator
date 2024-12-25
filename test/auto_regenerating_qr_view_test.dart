@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secure_qr_generator/secure_qr_generator.dart';
-import 'package:secure_qr_generator/src/generation_error.dart';
 
 void main() {
   const testKey = '2024#@#qrcod#orange@##perform#==';
@@ -11,7 +10,7 @@ void main() {
     late QRData testData;
 
     setUp(() {
-      // Configuration valide avec une clé secrète
+      // Valid configuration with a secret key
       final config = GeneratorConfig(
         secretKey: testKey,
         validityDuration: const Duration(minutes: 5),
@@ -29,7 +28,7 @@ void main() {
           body: AutoRegeneratingQRView(
             data: testData,
             generator: generator,
-            builder: (qrData) => const Text('QR Content'), // Évite QrImageView
+            builder: (qrData) => const Text('QR Content'), // Avoid QrImageView
           ),
         ),
       ));
@@ -40,12 +39,12 @@ void main() {
     });
 
     testWidgets('should handle error state', (tester) async {
-      // Créer un générateur qui échouera à cause des données invalides
+      // Create a generator that will fail due to invalid data
       final mockedGenerator = SecureQRGenerator(GeneratorConfig(
         secretKey: testKey,
       ));
 
-      // Données qui provoqueront une erreur
+      // Data that will cause an error
       final invalidData = QRData(
           payload: List.generate(10000, (i) => i).fold<Map<String, dynamic>>(
               {},
@@ -64,7 +63,7 @@ void main() {
       ));
 
       await tester.pumpAndSettle();
-      expect(find.textContaining('Erreur:'), findsOneWidget);
+      expect(find.textContaining('Error:'), findsOneWidget);
     });
 
     testWidgets('should call callbacks correctly', (tester) async {
@@ -84,22 +83,22 @@ void main() {
         ),
       ));
 
-      // Attendre la génération initiale
+      // Wait for initial generation
       await tester.pumpAndSettle();
 
-      // Vérifier qu'au moins une génération a eu lieu
+      // Verify that at least one generation occurred
       expect(regenerations, isNotEmpty);
       final firstId = regenerations.first.id;
 
-      // Attendre la régénération
+      // Wait for regeneration
       await tester.pump(const Duration(milliseconds: 150));
       await tester.pumpAndSettle();
 
-      // Vérifier qu'une nouvelle génération a eu lieu avec un ID différent
+      // Verify that a new generation occurred with a different ID
       expect(
         regenerations.where((r) => r.id != firstId),
         isNotEmpty,
-        reason: 'Le QR code devrait avoir été régénéré avec un nouvel ID',
+        reason: 'QR code should have been regenerated with a new ID',
       );
     });
 
@@ -119,7 +118,7 @@ void main() {
                 generator: generator,
                 size: customSize,
                 builder: (qrData) => Container(
-                  color: Colors.grey[200], // Pour rendre visible la taille
+                  color: Colors.grey[200], // To make size visible
                   child: const Center(child: Text('QR Content')),
                 ),
               ),
@@ -209,7 +208,7 @@ void main() {
       // Dispose widget
       await tester.pumpWidget(const MaterialApp(home: Scaffold()));
 
-      // Attendre pour vérifier qu'il n'y a pas d'erreurs
+      // Wait to verify there are no errors
       await tester.pump(const Duration(milliseconds: 200));
     });
   });

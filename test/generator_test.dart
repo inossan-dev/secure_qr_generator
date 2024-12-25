@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secure_qr_generator/secure_qr_generator.dart';
-import 'package:secure_qr_generator/src/generation_error.dart';
-
 
 void main() {
   const testKey = '2024#@#qrcod#orange@##perform#==';

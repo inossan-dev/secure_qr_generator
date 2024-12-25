@@ -1,15 +1,14 @@
-
-/// Représente les données à encoder dans un QR code avant sécurisation.
-/// Cette classe assure que les données sont dans un format valide
-/// avant la génération du QR code.
+/// Represents the data to be encoded in a QR code before securing.
+/// This class ensures that the data is in a valid format
+/// before QR code generation.
 class QRData {
-  /// Données métier à encoder dans le QR code
+  /// Business data to be encoded in the QR code
   final Map<String, dynamic> payload;
 
-  /// Métadonnées optionnelles qui seront incluses dans le QR code
+  /// Optional metadata that will be included in the QR code
   final Map<String, dynamic>? metadata;
 
-  /// Tags optionnels pour catégoriser ou filtrer les QR codes
+  /// Optional tags to categorize or filter QR codes
   final List<String>? tags;
 
   const QRData({
@@ -18,7 +17,7 @@ class QRData {
     this.tags,
   });
 
-  /// Convertit les données en Map pour la sérialisation
+  /// Converts the data to a Map for serialization
   Map<String, dynamic> toMap() {
     return {
       'payload': payload,

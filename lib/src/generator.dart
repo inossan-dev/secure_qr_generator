@@ -1,44 +1,40 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:secure_qr_generator/src/generation_error.dart';
-import 'package:secure_qr_generator/src/generation_result.dart';
-import 'package:secure_qr_generator/src/qr_data.dart';
+import 'package:secure_qr_generator/secure_qr_generator.dart';
 import 'package:uuid/uuid.dart';
 
-import 'config.dart';
-
-/// Générateur principal pour les QR codes sécurisés.
-/// Cette classe implémente toute la logique de génération, incluant :
-/// - Chiffrement des données
-/// - Signature numérique
-/// - Gestion des métadonnées
-/// - Horodatage
+/// Main generator for secure QR codes.
+/// This class implements all generation logic, including:
+/// - Data encryption
+/// - Digital signature
+/// - Metadata management
+/// - Timestamping
 class SecureQRGenerator {
-  /// Configuration du générateur
+  /// Generator configuration
   final GeneratorConfig config;
 
-  /// Instance de l'encrypteur AES (null si chiffrement désactivé)
+  /// AES encrypter instance (null if encryption is disabled)
   final Encrypter? _encrypter;
 
-  /// Générateur d'identifiants uniques
+  /// Unique identifier generator
   final Uuid _uuid;
 
-  /// Crée un nouveau générateur avec la configuration spécifiée
+  /// Creates a new generator with the specified configuration
   SecureQRGenerator(this.config)
       : _encrypter = config.enableEncryption && config.secretKey != null
       ? Encrypter(AES(Key.fromUtf8(config.secretKey!.padRight(32))))
       : null,
         _uuid = const Uuid();
 
-  /// Génère un QR code sécurisé à partir des données fournies
+  /// Generates a secure QR code from the provided data
   Future<GenerationResult> generateQR(QRData data) async {
     try {
-      // Génération de l'identifiant unique
+      // Generate unique identifier
       final id = '${config.idPrefix}${_uuid.v4()}';
       final now = DateTime.now();
 
-      // Construction du payload complet
+      // Build complete payload
       final fullPayload = {
         'data': data.toMap(),
         'id': id,
@@ -46,39 +42,39 @@ class SecureQRGenerator {
         'version': config.dataVersion,
       };
 
-      // Ajout de la signature si activée
+      // Add signature if enabled
       if (config.enableSignature) {
         fullPayload['signature'] = _generateSignature(fullPayload);
       }
 
-      // Sérialisation en JSON
+      // JSON serialization
       final jsonPayload = jsonEncode(fullPayload);
 
-      // Vérification de la taille (estimation de la taille finale du QR)
-      if (jsonPayload.length > 2000) { // Limite arbitraire pour cet exemple
+      // Size verification (estimate of final QR size)
+      if (jsonPayload.length > 2000) { // Arbitrary limit for this example
         throw GenerationError(
           type: GenerationErrorType.payloadTooLarge,
-          message: 'Payload trop volumineux',
+          message: 'Payload too large',
           details: {'size': jsonPayload.length, 'maxSize': 2000},
         );
       }
 
-      // Chiffrement si activé
+      // Encryption if enabled
       final String finalContent;
       final bool isEncrypted;
       if (config.enableEncryption && _encrypter != null) {
         try {
-          // Création d'un IV unique pour chaque génération
+          // Create unique IV for each generation
           final iv = IV.fromSecureRandom(16);
           final encrypted = _encrypter!.encrypt(jsonPayload, iv: iv);
-          // Combiner l'IV et les données chiffrées
+          // Combine IV and encrypted data
           final combined = iv.bytes + encrypted.bytes;
           finalContent = base64Encode(combined);
           isEncrypted = true;
         } catch (e) {
           throw GenerationError(
             type: GenerationErrorType.encryption,
-            message: 'Erreur lors du chiffrement',
+            message: 'Error during encryption',
             details: {'error': e.toString()},
           );
         }
@@ -87,7 +83,7 @@ class SecureQRGenerator {
         isEncrypted = false;
       }
 
-      // Création du résultat
+      // Create result
       return GenerationResult(
         qrContent: finalContent,
         id: id,
@@ -102,16 +98,17 @@ class SecureQRGenerator {
 
       throw GenerationError(
         type: GenerationErrorType.unknown,
-        message: 'Erreur inattendue: ${e.toString()}',
+        message: 'Unexpected error: ${e.toString()}',
       );
     }
   }
-  /// Génère une signature HMAC-SHA256 pour un payload
+
+  /// Generates an HMAC-SHA256 signature for a payload
   String _generateSignature(Map<String, dynamic> payload) {
     if (!config.enableSignature || config.secretKey == null) {
       throw GenerationError(
         type: GenerationErrorType.signature,
-        message: 'Signature désactivée ou clé manquante',
+        message: 'Signature disabled or missing key',
       );
     }
 
@@ -125,14 +122,14 @@ class SecureQRGenerator {
     } catch (e) {
       throw GenerationError(
         type: GenerationErrorType.signature,
-        message: 'Erreur lors de la génération de la signature',
+        message: 'Error during signature generation',
         details: {'error': e.toString()},
       );
     }
   }
 
-  /// Estime la taille finale du QR code avant la génération
-  /// Utile pour vérifier si les données ne sont pas trop volumineuses
+  /// Estimates the final QR code size before generation
+  /// Useful for checking if the data is not too large
   int estimateQRSize(QRData data) {
     try {
       final testPayload = {
@@ -144,33 +141,33 @@ class SecureQRGenerator {
 
       final jsonSize = jsonEncode(testPayload).length;
 
-      // Ajout de marge pour la signature si activée
+      // Add margin for signature if enabled
       final signatureSize = config.enableSignature ? 64 : 0;
 
-      // Le chiffrement et l'encodage base64 augmentent la taille d'environ 33%
+      // Encryption and base64 encoding increase size by about 33%
       final encryptionOverhead = config.enableEncryption ? 0.33 : 0;
 
       return (jsonSize + signatureSize) * (1 + encryptionOverhead).round();
     } catch (e) {
       throw GenerationError(
         type: GenerationErrorType.unknown,
-        message: 'Erreur lors de l\'estimation de la taille',
+        message: 'Error during size estimation',
         details: {'error': e.toString()},
       );
     }
   }
 
-  /// Vérifie si les données peuvent être encodées dans un QR code
+  /// Checks if the data can be encoded in a QR code
   bool canEncodeData(QRData data) {
     try {
       final estimatedSize = estimateQRSize(data);
-      return estimatedSize <= 2000; // Limite arbitraire pour cet exemple
+      return estimatedSize <= 2000; // Arbitrary limit for this example
     } catch (e) {
       return false;
     }
   }
 
-  /// Crée une version de test du générateur avec une configuration simplifiée
+  /// Creates a test version of the generator with simplified configuration
   factory SecureQRGenerator.test() {
     return SecureQRGenerator(GeneratorConfig.development());
   }

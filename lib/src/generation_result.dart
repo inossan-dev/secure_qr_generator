@@ -1,27 +1,26 @@
-
-/// Résultat de la génération d'un QR code sécurisé.
-/// Cette classe contient toutes les informations sur le QR code généré,
-/// y compris son contenu et ses métadonnées.
+/// Result of secure QR code generation.
+/// This class contains all information about the generated QR code,
+/// including its content and metadata.
 class GenerationResult {
-  /// Contenu final du QR code (encodé et sécurisé)
+  /// Final QR code content (encoded and secured)
   final String qrContent;
 
-  /// Identifiant unique du QR code
+  /// Unique identifier of the QR code
   final String id;
 
-  /// Date de génération
+  /// Generation date
   final DateTime generatedAt;
 
-  /// Date d'expiration calculée
+  /// Calculated expiration date
   final DateTime expiresAt;
 
-  /// Indique si le contenu est chiffré
+  /// Indicates if the content is encrypted
   final bool isEncrypted;
 
-  /// Indique si le contenu est signé
+  /// Indicates if the content is signed
   final bool isSigned;
 
-  /// Taille en caractères du contenu final
+  /// Size in characters of the final content
   final int contentSize;
 
   const GenerationResult({
@@ -34,19 +33,19 @@ class GenerationResult {
     required this.contentSize,
   });
 
-  /// Indique si le QR code est actuellement valide
+  /// Indicates if the QR code is currently valid
   bool get isValid {
     final now = DateTime.now();
     return now.isBefore(expiresAt);
   }
 
-  /// Temps restant avant expiration
+  /// Time remaining until expiration
   Duration get timeUntilExpiration {
     final now = DateTime.now();
     return expiresAt.difference(now);
   }
 
-  /// Convertit le résultat en Map pour le logging ou le stockage
+  /// Converts the result to a Map for logging or storage
   Map<String, dynamic> toMap() {
     return {
       'id': id,

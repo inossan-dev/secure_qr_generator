@@ -1,4 +1,11 @@
-## 1.0.3
+## 1.0.5
+
+## Added
+
+* reviews class comments
+
+
+## 1.0.4
 
 ## Added
 

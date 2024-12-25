@@ -1,32 +1,32 @@
-/// Configuration pour la génération de QR codes sécurisés.
-/// Cette classe regroupe tous les paramètres qui contrôlent la façon dont
-/// les QR codes sont générés et sécurisés.
+/// Configuration for secure QR code generation.
+/// This class groups all parameters that control how
+/// QR codes are generated and secured.
 class GeneratorConfig {
-  /// Clé secrète utilisée pour le chiffrement et la signature.
-  /// Elle doit faire au moins 32 caractères si le chiffrement est activé.
+  /// Secret key used for encryption and signing.
+  /// Must be at least 32 characters if encryption is enabled.
   final String? secretKey;
 
-  /// Durée de validité des QR codes générés.
-  /// Après cette durée, les QR codes seront considérés comme expirés.
+  /// Validity duration of generated QR codes.
+  /// After this duration, QR codes will be considered expired.
   final Duration validityDuration;
 
-  /// Active ou désactive le chiffrement du contenu.
-  /// Quand activé, le contenu des QR codes n'est lisible que par les
-  /// applications possédant la clé secrète.
+  /// Enables or disables content encryption.
+  /// When enabled, QR code content can only be read by
+  /// applications possessing the secret key.
   final bool enableEncryption;
 
-  /// Active ou désactive la signature numérique.
-  /// Quand activé, permet de vérifier l'authenticité des QR codes.
+  /// Enables or disables digital signature.
+  /// When enabled, allows verification of QR code authenticity.
   final bool enableSignature;
 
-  /// Version du format de données utilisé.
-  /// Permet une évolution future du format tout en maintenant
-  /// la compatibilité avec les anciennes versions.
+  /// Version of the data format used.
+  /// Allows future evolution of the format while maintaining
+  /// compatibility with older versions.
   final int dataVersion;
 
-  /// Préfixe ajouté aux identifiants uniques.
-  /// Permet de distinguer les QR codes de différentes applications
-  /// ou environnements.
+  /// Prefix added to unique identifiers.
+  /// Allows distinguishing QR codes from different applications
+  /// or environments.
   final String idPrefix;
 
   GeneratorConfig({
@@ -37,29 +37,29 @@ class GeneratorConfig {
     this.dataVersion = 1,
     this.idPrefix = '',
   }) {
-    // Validation des paramètres
+    // Parameter validation
     if ((enableEncryption || enableSignature) && secretKey == null) {
       throw ArgumentError(
-        'La clé secrète est requise quand le chiffrement ou la signature est activé',
+        'Secret key is required when encryption or signature is enabled',
       );
     }
 
     if (enableEncryption && secretKey != null && secretKey!.length < 32) {
       throw ArgumentError(
-        'La clé secrète doit faire au moins 32 caractères quand le chiffrement est activé',
+        'Secret key must be at least 32 characters when encryption is enabled',
       );
     }
 
     if (dataVersion < 1) {
-      throw ArgumentError('La version doit être supérieure à 0');
+      throw ArgumentError('Version must be greater than 0');
     }
 
     if (validityDuration.inSeconds <= 0) {
-      throw ArgumentError('La durée de validité doit être positive');
+      throw ArgumentError('Validity duration must be positive');
     }
   }
 
-  /// Crée une configuration pour un environnement de développement
+  /// Creates a configuration for a development environment
   factory GeneratorConfig.development() {
     return GeneratorConfig(
       secretKey: 'dev_key_for_testing_purposes_only!!!',
@@ -70,14 +70,14 @@ class GeneratorConfig {
     );
   }
 
-  /// Crée une configuration pour un environnement de production
-  /// avec des paramètres de sécurité renforcés
+  /// Creates a configuration for a production environment
+  /// with enhanced security parameters
   factory GeneratorConfig.production({
     required String secretKey,
     Duration validityDuration = const Duration(minutes: 5),
   }) {
     if (secretKey.length < 32) {
-      throw ArgumentError('La clé de production doit faire au moins 32 caractères');
+      throw ArgumentError('Production key must be at least 32 characters');
     }
 
     return GeneratorConfig(

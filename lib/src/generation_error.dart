@@ -1,12 +1,12 @@
-/// Représente une erreur survenue pendant la génération d'un QR code.
+/// Represents an error that occurred during QR code generation.
 class GenerationError extends Error {
-  /// Type d'erreur
+  /// Error type
   final GenerationErrorType type;
 
-  /// Message d'erreur détaillé
+  /// Detailed error message
   final String message;
 
-  /// Données techniques supplémentaires sur l'erreur
+  /// Additional technical details about the error
   final Map<String, dynamic>? details;
 
   GenerationError({
@@ -19,23 +19,23 @@ class GenerationError extends Error {
   String toString() => 'GenerationError($type): $message';
 }
 
-/// Types d'erreurs possibles lors de la génération
+/// Possible error types during generation
 enum GenerationErrorType {
-  /// Erreur de configuration (clé manquante, paramètres invalides...)
+  /// Configuration error (missing key, invalid parameters...)
   configuration,
 
-  /// Erreur lors du chiffrement des données
+  /// Error during data encryption
   encryption,
 
-  /// Erreur lors de la génération de la signature
+  /// Error during signature generation
   signature,
 
-  /// Erreur lors de la sérialisation des données
+  /// Error during data serialization
   serialization,
 
-  /// Taille des données trop importante
+  /// Data size too large
   payloadTooLarge,
 
-  /// Erreur inattendue
+  /// Unexpected error
   unknown,
 }

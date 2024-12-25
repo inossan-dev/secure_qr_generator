@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:secure_qr_generator/secure_qr_generator.dart';
 
-/// Widget qui gère automatiquement la régénération des QR codes
-/// avant leur expiration pour assurer une continuité de service.
+/// Widget that automatically handles QR code regeneration
+/// before expiration to ensure service continuity.
 class AutoRegeneratingQRView extends StatefulWidget {
-  /// Données à encoder dans le QR code
+  /// Data to be encoded in the QR code
   final QRData data;
 
-  /// Générateur de QR codes à utiliser
+  /// QR code generator to use
   final SecureQRGenerator generator;
 
-  /// Intervalle entre les régénérations
-  /// Par défaut : 80% de la durée de validité configurée
+  /// Interval between regenerations
+  /// Default: 80% of the configured validity duration
   final Duration? regenerationInterval;
 
-  /// Callback appelé à chaque régénération
+  /// Callback called on each regeneration
   final void Function(GenerationResult)? onRegenerate;
 
-  /// Callback appelé en cas d'erreur
+  /// Callback called in case of error
   final void Function(dynamic)? onError;
 
   /// Optional function allowing complete customization of the QR code rendering.
@@ -29,10 +29,10 @@ class AutoRegeneratingQRView extends StatefulWidget {
   /// to be displayed.
   final Widget Function(String qrData)? builder;
 
-  /// Style du QR code
+  /// QR code style
   final QrStyle style;
 
-  /// Taille du QR code
+  /// QR code size
   final double size;
 
   const AutoRegeneratingQRView({
@@ -108,7 +108,7 @@ class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
   void _startRegenerationTimer() {
     _regenerationTimer?.cancel();
 
-    // Calcul de l'intervalle de régénération
+    // Calculate regeneration interval
     final interval = widget.regenerationInterval ??
         Duration(
           milliseconds: (widget.generator.config.validityDuration.inMilliseconds * 0.8).round(),
@@ -151,7 +151,7 @@ class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
         height: widget.size,
         child: Center(
           child: Text(
-            'Erreur: $_error',
+            'Error: $_error',
             textAlign: TextAlign.center,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
@@ -180,7 +180,7 @@ class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
   }
 }
 
-/// Style pour personnaliser l'apparence du QR code
+/// Style for customizing QR code appearance
 class QrStyle {
   final QrEyeStyle? eyeStyle;
   final QrDataModuleStyle? dataModuleStyle;
