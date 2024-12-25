@@ -1,3 +1,15 @@
+## Changelog
+
+All notable changes to the Secure QR Validator will be documented in this file.
+
+
+## 1.0.6 - 2024-12-25
+
+## Added
+
+* add example directory for using library
+
+
 ## 1.0.5
 
 ## Added
@@ -30,7 +42,7 @@
 
 ## Added
 
-* allow to add custom qrcode
+* allow to add custom qrcode by consider builder attribute
 
 
 ## 1.0.0

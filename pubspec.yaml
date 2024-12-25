@@ -1,6 +1,6 @@
 name: secure_qr_generator
-description: A new Flutter package project.
-version: 1.0.4
+description: A Flutter package for generating secure, auto-regenerating QR codes with encryption, digital signatures, and automatic expiration management.
+version: 1.0.6
 homepage:
 
 environment:
