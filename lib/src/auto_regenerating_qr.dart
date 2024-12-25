@@ -22,6 +22,13 @@ class AutoRegeneratingQR extends StatefulWidget {
   /// Callback appelé en cas d'erreur
   final void Function(dynamic)? onError;
 
+  /// Optional function allowing complete customization of the QR code rendering.
+  /// If not provided, the widget will use QrImageView by default.
+  ///
+  /// The qrData parameter contains the encoded and secured data ready
+  /// to be displayed.
+  final Widget Function(String qrData)? builder;
+
   /// Style du QR code
   final QrStyle style;
 
@@ -35,6 +42,7 @@ class AutoRegeneratingQR extends StatefulWidget {
     this.regenerationInterval,
     this.onRegenerate,
     this.onError,
+    this.builder,
     this.style = const QrStyle(),
     this.size = 200,
   });
@@ -152,7 +160,7 @@ class _AutoRegeneratingQRState extends State<AutoRegeneratingQR> {
       return const SizedBox.shrink();
     }
 
-    return QrImageView(
+    return widget.builder?.call(_currentResult!.qrContent) ?? QrImageView(
       data: _currentResult!.qrContent,
       size: widget.size,
       eyeStyle: widget.style.eyeStyle ?? const QrEyeStyle(),
