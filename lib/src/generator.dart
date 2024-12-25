@@ -21,9 +21,6 @@ class SecureQRGenerator {
   /// Instance de l'encrypteur AES (null si chiffrement désactivé)
   final Encrypter? _encrypter;
 
-  /// Vecteur d'initialisation pour AES
-  final IV? _iv;
-
   /// Générateur d'identifiants uniques
   final Uuid _uuid;
 
@@ -32,16 +29,7 @@ class SecureQRGenerator {
       : _encrypter = config.enableEncryption && config.secretKey != null
       ? Encrypter(AES(Key.fromUtf8(config.secretKey!.padRight(32))))
       : null,
-        _iv = config.enableEncryption ? IV.fromLength(16) : null,
-        _uuid = const Uuid() {
-    // Validation supplémentaire de la configuration
-    if (config.enableEncryption && (_encrypter == null || _iv == null)) {
-      throw GenerationError(
-        type: GenerationErrorType.configuration,
-        message: 'Configuration de chiffrement invalide',
-      );
-    }
-  }
+        _uuid = const Uuid();
 
   /// Génère un QR code sécurisé à partir des données fournies
   Future<GenerationResult> generateQR(QRData data) async {
@@ -78,10 +66,14 @@ class SecureQRGenerator {
       // Chiffrement si activé
       final String finalContent;
       final bool isEncrypted;
-      if (config.enableEncryption && _encrypter != null && _iv != null) {
+      if (config.enableEncryption && _encrypter != null) {
         try {
-          final encrypted = _encrypter!.encrypt(jsonPayload, iv: _iv!);
-          finalContent = base64Encode(encrypted.bytes);
+          // Création d'un IV unique pour chaque génération
+          final iv = IV.fromSecureRandom(16);
+          final encrypted = _encrypter!.encrypt(jsonPayload, iv: iv);
+          // Combiner l'IV et les données chiffrées
+          final combined = iv.bytes + encrypted.bytes;
+          finalContent = base64Encode(combined);
           isEncrypted = true;
         } catch (e) {
           throw GenerationError(

@@ -13,4 +13,3 @@
 * Initial release
 * Secure QR code generation
 * Integrated Flutter widgets
-* Robust validation systemuste

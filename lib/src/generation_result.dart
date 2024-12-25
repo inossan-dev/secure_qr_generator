@@ -56,6 +56,7 @@ class GenerationResult {
       'isSigned': isSigned,
       'contentSize': contentSize,
       'isValid': isValid,
+      'qrContent': qrContent,
       'timeUntilExpiration': timeUntilExpiration.inSeconds,
     };
   }

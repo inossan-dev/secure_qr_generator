@@ -5,7 +5,7 @@ import 'package:secure_qr_generator/secure_qr_generator.dart';
 
 /// Widget qui gère automatiquement la régénération des QR codes
 /// avant leur expiration pour assurer une continuité de service.
-class AutoRegeneratingQR extends StatefulWidget {
+class AutoRegeneratingQRView extends StatefulWidget {
   /// Données à encoder dans le QR code
   final QRData data;
 
@@ -35,7 +35,7 @@ class AutoRegeneratingQR extends StatefulWidget {
   /// Taille du QR code
   final double size;
 
-  const AutoRegeneratingQR({
+  const AutoRegeneratingQRView({
     super.key,
     required this.data,
     required this.generator,
@@ -48,10 +48,10 @@ class AutoRegeneratingQR extends StatefulWidget {
   });
 
   @override
-  State<AutoRegeneratingQR> createState() => _AutoRegeneratingQRState();
+  State<AutoRegeneratingQRView> createState() => _AutoRegeneratingQRViewState();
 }
 
-class _AutoRegeneratingQRState extends State<AutoRegeneratingQR> {
+class _AutoRegeneratingQRViewState extends State<AutoRegeneratingQRView> {
   Timer? _regenerationTimer;
   GenerationResult? _currentResult;
   bool _isLoading = true;
@@ -70,7 +70,7 @@ class _AutoRegeneratingQRState extends State<AutoRegeneratingQR> {
   }
 
   @override
-  void didUpdateWidget(AutoRegeneratingQR oldWidget) {
+  void didUpdateWidget(AutoRegeneratingQRView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data != widget.data) {
       _generateInitialQR();

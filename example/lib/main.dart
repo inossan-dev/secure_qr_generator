@@ -33,7 +33,7 @@ class QRDisplayScreen extends StatefulWidget {
 class _QRDisplayScreenState extends State<QRDisplayScreen> {
 
   // Configuration du générateur
-  final config = GeneratorConfig.production(
+  final config = GeneratorConfig(
     secretKey: 'votre_clé_secrète_de_production_très_longue',
     validityDuration: const Duration(minutes: 5),
   );
@@ -44,12 +44,10 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
   // Préparation des données
   final qrData = const QRData(
     payload: {
-      'userId': 'U123456',
-      'accessLevel': 3,
-      'location': 'Building A',
+      'phoneNumber': '07070707',
     },
     metadata: {
-      'generatedBy': 'AccessControl System',
+      'generatedBy': 'Maxit System',
       'environment': 'PROD',
     },
     tags: ['access', 'building_a'],
@@ -88,11 +86,10 @@ class _QRDisplayScreenState extends State<QRDisplayScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('QR Code Access')),
       body: Center(
-        child: AutoRegeneratingQR(
+        child: AutoRegeneratingQRView(
           data:  const QRData(
             payload: {
-              'userId': 'U123456',
-              'accessLevel': 3,
+              'phoneNumber': '07070707',
             },
           ),
           generator: generator,
