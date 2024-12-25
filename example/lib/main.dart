@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:secure_qr_generator/secure_qr_generator.dart';
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Secure QR Genrator Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -22,7 +24,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Exemple d'utilisation dans un widget Flutter
 class QRDisplayScreen extends StatefulWidget {
   const QRDisplayScreen({super.key});
 
@@ -32,85 +33,140 @@ class QRDisplayScreen extends StatefulWidget {
 
 class _QRDisplayScreenState extends State<QRDisplayScreen> {
 
-  // Configuration du générateur
-  final config = GeneratorConfig(
-    secretKey: 'votre_clé_secrète_de_production_très_longue',
-    validityDuration: const Duration(minutes: 5),
-  );
+  late TextEditingController phoneController;
+  late TextEditingController secretKeyController;
+  bool enableEncryption = true;
+  bool enableSignature = true;
+  int validityDuration = 60;
+  String phoneNumber = '07070707';
 
-  // Création du générateur
+  // Configuration
+  late GeneratorConfig secureConfig;
   late SecureQRGenerator generator;
 
-  // Préparation des données
-  final qrData = const QRData(
-    payload: {
-      'phoneNumber': '07070707',
-    },
-    metadata: {
-      'generatedBy': 'Maxit System',
-      'environment': 'PROD',
-    },
-    tags: ['access', 'building_a'],
-  );
-
-  generateQR() async {
-    try {
-      // Vérification préalable de la taille
-      if (!generator.canEncodeData(qrData)) {
-        print('Données trop volumineuses pour un QR code');
-        return;
-      }
-
-      // Génération du QR code
-      final result = await generator.generateQR(qrData);
-
-      print('QR Code généré avec succès:');
-      print('ID: ${result.id}');
-      print('Expire le: ${result.expiresAt}');
-      print('Taille: ${result.contentSize} caractères');
-
-    } catch (e) {
-      print('Erreur lors de la génération: $e');
-    }
+  // Mise à jour du générateur
+  void updateGenerator() {
+    setState(() {
+      secureConfig = GeneratorConfig(
+        secretKey: secretKeyController.text,
+        enableEncryption: enableEncryption,
+        enableSignature: enableSignature,
+        validityDuration: Duration(seconds: validityDuration),
+      );
+      generator = SecureQRGenerator(secureConfig);
+    });
   }
 
   @override
   void initState() {
-    generator = SecureQRGenerator(config);
-    generateQR();
+    phoneController = TextEditingController(text: phoneNumber);
+    secretKeyController = TextEditingController(text: '2024#@#qrcod#orange@##perform#==');
+    // Initialisation des configs
+    secureConfig = GeneratorConfig(
+      secretKey: secretKeyController.text,
+      enableEncryption: enableEncryption,
+      enableSignature: enableSignature,
+      validityDuration: Duration(seconds: validityDuration),
+    );
+    generator = SecureQRGenerator(secureConfig);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Code Access')),
-      body: Center(
-        child: AutoRegeneratingQRView(
-          data:  const QRData(
-            payload: {
-              'phoneNumber': '07070707',
-            },
-          ),
-          generator: generator,
-          size: 250,
-          style: const QrStyle(
-            eyeStyle: QrEyeStyle(
-              eyeShape: QrEyeShape.square,
-              color: Colors.blue,
+      appBar: AppBar(title: const Text('Secure QR Generator Demo')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: secretKeyController,
+              decoration: const InputDecoration(labelText: 'Clé secrète AES-256 (optionnel)'),
+              onChanged: (_) => updateGenerator(),
             ),
-          ),
-          onRegenerate: (result) {
-            print('Nouveau QR code généré: ${result.id}');
-          },
-          onError: (error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erreur: $error')),
-            );
-          },
+            SwitchListTile(
+              title: const Text('Chiffrement (optionnel)'),
+              value: enableEncryption,
+              onChanged: (value) {
+                setState(() {
+                  enableEncryption = value;
+                  updateGenerator();
+                });
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Signature (optionnel)'),
+              value: enableSignature,
+              onChanged: (value) {
+                setState(() {
+                  enableSignature = value;
+                  updateGenerator();
+                });
+              },
+            ),
+            Text('Durée de validité ($validityDuration sécondes)'),
+            Slider(
+              value: validityDuration.toDouble(),
+              min: 10,
+              max: 300,
+              divisions: 29,
+              label: '$validityDuration secondes',
+              onChanged: (value) {
+                setState(() {
+                  validityDuration = value.toInt();
+                  updateGenerator();
+                });
+              },
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Numéro de téléphone'),
+              controller: phoneController,
+              onChanged: (value) {
+                setState(() {
+                  phoneNumber = value;
+                });
+              },
+            ),
+            const SizedBox(height: 40),
+            // QR Code
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AutoRegeneratingQRView(
+                  data: QRData(
+                    payload: {
+                      'phoneNumber': phoneNumber,
+                    },
+                  ),
+                  generator: generator,
+                  size: 250,
+                  style: const QrStyle(
+                    eyeStyle: QrEyeStyle(
+                      eyeShape: QrEyeShape.square,
+                      color: Colors.deepOrangeAccent,
+                    ),
+                  ),
+                  onRegenerate: (result) => log('Nouveau QR code généré: ${result.toMap()}'),
+                  onError: (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erreur: $error')),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    secretKeyController.dispose();
+    super.dispose();
   }
 }
 
